@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PROMPT_TEMPLATE } from '../../config/prompt-template';
-import { BDS_NHA_PHO_PROMPT } from '../../config/bds-nha-pho-prompt';
+import { ENGLISH_LEARNING_PROMPT } from '../../config/english-learning-prompt';
 import { SAVE_INFO_USER_PROMPT } from '../../config/save-info-user-promt';
-import { McpService } from '../../modules/core/services/mcp.service';
+import { McpHttpService } from '../../modules/core/services/mcp-http.service';
 
 @Injectable()
 export class SystemPromptUtil {
   private readonly logger = new Logger(SystemPromptUtil.name);
 
-  constructor(private readonly mcpService: McpService) {}
+  constructor(private readonly mcpService: McpHttpService) {}
 
   getSystemPrompt(): string {
     try {
@@ -26,14 +26,14 @@ export class SystemPromptUtil {
             .join('\n')
         : 'Đang tải tools từ MCP server...';
 
-      // Ghép nối prompt chính với prompt BĐS Nhà Phố
+      // Ghép nối prompt chính với prompt English Learning
       const fullPrompt = promptTemplate
         .replace('{{toolCount}}', toolCount.toString())
-        .replace('{{toolsList}}', toolsList) + BDS_NHA_PHO_PROMPT + SAVE_INFO_USER_PROMPT;
+        .replace('{{toolsList}}', toolsList) + ENGLISH_LEARNING_PROMPT + SAVE_INFO_USER_PROMPT;
 
-      this.logger.log('System prompt assembled with BDS Nha Pho information', {
+      this.logger.log('System prompt assembled with English Learning information', {
         mainPromptLength: promptTemplate.length,
-        bdsPromptLength: BDS_NHA_PHO_PROMPT.length,
+        englishPromptLength: ENGLISH_LEARNING_PROMPT.length,
         saveInfoPromptLength: SAVE_INFO_USER_PROMPT.length,
         totalLength: fullPrompt.length,
         toolCount

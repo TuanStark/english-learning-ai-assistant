@@ -1,7 +1,7 @@
 {
-  "name": "real-estate-chatbot-agent-nestjs",
+  "name": "english-learning-ai-assistant-nestjs",
   "version": "2.0.0",
-  "description": "AI Real Estate Chatbot Agent built with NestJS and TypeScript",
+  "description": "AI English Learning Assistant built with NestJS and TypeScript",
   "author": "Your Name",
   "private": true,
   "license": "MIT",

@@ -232,17 +232,17 @@ export class OpenAiService {
         return ''; // Return empty string if knowledge not loaded
       }
 
-      // Get real estate knowledge for all sections (since they're all real estate related)
-      const realEstateKnowledge = this.knowledgeBaseLoader.getKnowledgeSection('realEstate');
+      // Get English learning knowledge for all sections (since they're all English learning related)
+      const englishLearningKnowledge = this.knowledgeBaseLoader.getKnowledgeSection('englishLearning');
       const websiteContext = this.knowledgeBaseLoader.getKnowledgeSection('website');
 
-      // For now, return the full real estate knowledge for all sections
+      // For now, return the full English learning knowledge for all sections
       // In the future, we could parse and extract specific sections from the markdown
       switch (section) {
         case 'GENERAL_KNOWLEDGE':
-          return realEstateKnowledge + '\n\n' + websiteContext;
+          return englishLearningKnowledge + '\n\n' + websiteContext;
         default:
-          return realEstateKnowledge;
+          return englishLearningKnowledge;
       }
     } catch (error) {
       this.logger.error('Failed to get knowledge section', error);

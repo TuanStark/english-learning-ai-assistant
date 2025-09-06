@@ -1,111 +1,236 @@
-# 🏠 Real Estate Chatbot Agent (NestJS + TypeScript)
+# 📚 English Learning AI Assistant (NestJS + TypeScript)
 
 ## 🚀 Overview
 
-Advanced AI-powered real estate chatbot built with **NestJS** and **TypeScript**, providing intelligent property search, market analysis, and investment recommendations for Đà Nẵng real estate market.
+Advanced AI-powered English learning assistant built with **NestJS** and **TypeScript**, providing intelligent exercise generation, personalized learning paths, and comprehensive English language support.
 
 ## ✨ Features
 
 ### 🤖 **AI-Powered Intelligence**
 - **GPT-4o Integration**: Advanced natural language understanding
 - **Smart Query Processing**: Intent recognition and context awareness
-- **Multi-tool Execution**: Seamless integration with property databases
+- **Multi-tool Execution**: Seamless integration with learning databases
 
-### 🏢 **Real Estate Expertise**
-- **Property Search**: Advanced filtering and semantic search
-- **Market Analysis**: Investment insights and trend analysis
-- **Location Intelligence**: Area-specific recommendations
+### 📖 **English Learning Expertise**
+- **Exercise Generation**: Grammar, vocabulary, listening, speaking, reading, writing
+- **Level Assessment**: A1, A2, B1, B2, C1, C2 proficiency levels
+- **Personalized Learning**: Adaptive learning paths based on individual needs
 
 ### 🛡️ **Enterprise-Grade Architecture**
 - **Type Safety**: Full TypeScript support with compile-time validation
-- **Modular Design**: Clean, maintainable, and testable architecture
-- **Auto Documentation**: Swagger UI with interactive API docs
-- **Rate Limiting**: Built-in protection against abuse
-- **Caching**: Intelligent session and data caching
+- **Modular Design**: Clean separation of concerns with NestJS modules
+- **Error Handling**: Comprehensive error management and logging
+- **Performance**: Optimized with caching and rate limiting
+
+### 🔧 **Advanced Features**
+- **MCP Integration**: Model Context Protocol for external tools
+- **Knowledge Base**: Comprehensive English learning resources
+- **Session Management**: Persistent conversation context
+- **API Documentation**: Auto-generated Swagger/OpenAPI docs
 
 ## 🏗️ Architecture
 
+### **Core Modules**
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Client App    │───▶│  NestJS API     │───▶│   OpenAI GPT    │
-│                 │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │
-                                ▼
-                       ┌─────────────────┐    ┌─────────────────┐
-                       │  MCP Server     │───▶│   Database      │
-                       │                 │    │   (Hasura)      │
-                       └─────────────────┘    └─────────────────┘
+src/
+├── modules/
+│   ├── core/           # Core services (OpenAI, MCP, Cache)
+│   ├── super-agent/    # Main English learning logic
+│   └── health/         # Health check endpoints
+├── knowledge/          # English learning knowledge base
+├── dto/               # Data Transfer Objects
+└── common/            # Shared utilities and validators
 ```
+
+### **Key Components**
+- **SuperAgentService**: Main orchestration logic
+- **EnglishLearningOpenAIService**: AI-powered learning assistance
+- **McpService**: External tool integration
+- **KnowledgeBaseLoader**: Learning resource management
+- **SystemPromptUtil**: Dynamic prompt generation
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### **Prerequisites**
 - Node.js 18+ 
 - npm or yarn
 - OpenAI API key
+- MCP server (optional)
 
-### Installation
+### **Installation**
 
+1. **Clone the repository**
 ```bash
-# Clone repository
 git clone <repository-url>
-cd AI-Agent
-
-# Install dependencies
-npm install
-
-# Setup environment
-cp .env.nestjs.example .env.nestjs
-# Edit .env.nestjs with your configuration
-
-# Start development server
-npm run start:dev
+cd english-learning-ai-assistant
 ```
 
-### Environment Configuration
+2. **Install dependencies**
+```bash
+npm install
+```
 
+3. **Environment setup**
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+4. **Start the application**
+```bash
+# Development
+npm run start:dev
+
+# Production
+npm run build
+npm run start:prod
+```
+
+### **Environment Variables**
 ```env
-# .env.nestjs
-NODE_ENV=development
-PORT=3000
-OPENAI_API_KEY=your_openai_api_key_here
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
 OPENAI_MODEL=gpt-4o
-MCP_SERVER_PATH=./mcp-servers/hasura-advanced
+
+# MCP Configuration
+MCP_SERVER_URL=http://localhost:8080
+MCP_API_KEY=english-learning-api-key-123
+
+# Application
+PORT=3000
+NODE_ENV=development
 ```
 
 ## 📚 API Documentation
 
-### Interactive Documentation
-Visit `http://localhost:3000/api/docs` for interactive Swagger UI.
+### **Base URL**
+```
+http://localhost:3000/api/v1
+```
 
-### Core Endpoints
+### **Main Endpoints**
 
-#### 🤖 Query Processing
+#### **Process Learning Query**
 ```http
-POST /api/v1/super-agent/query
+POST /super-agent/query
 Content-Type: application/json
 
 {
-  "query": "Tìm căn hộ 2 phòng ngủ tại Hải Châu giá dưới 5 tỷ",
-  "sessionId": "550e8400-e29b-41d4-a716-446655440000"
+  "query": "Tôi muốn học ngữ pháp thì hiện tại hoàn thành, trình độ B1",
+  "sessionId": "optional-session-id"
 }
 ```
 
-#### 📊 Service Status
+#### **Get Agent Status**
 ```http
-GET /api/v1/super-agent/status
+GET /super-agent/status
 ```
 
-#### 🧹 Session Management
+#### **Health Check**
 ```http
-POST /api/v1/super-agent/session/{sessionId}/cleanup
-POST /api/v1/super-agent/sessions/cleanup
+GET /super-agent/health
 ```
 
-#### ❤️ Health Check
-```http
-GET /api/v1/super-agent/health
+### **Swagger Documentation**
+Visit `http://localhost:3000/api/docs` for interactive API documentation.
+
+## 🎯 Usage Examples
+
+### **Grammar Learning**
+```json
+{
+  "query": "Tôi muốn học ngữ pháp thì hiện tại hoàn thành, trình độ B1",
+  "sessionId": "session-123"
+}
+```
+
+### **Vocabulary Learning**
+```json
+{
+  "query": "Học từ vựng chủ đề gia đình, trình độ A2",
+  "sessionId": "session-123"
+}
+```
+
+### **Listening Practice**
+```json
+{
+  "query": "Luyện nghe tiếng Anh chủ đề công việc, trình độ B2",
+  "sessionId": "session-123"
+}
+```
+
+### **Speaking Practice**
+```json
+{
+  "query": "Luyện nói tiếng Anh chủ đề du lịch, trình độ B1",
+  "sessionId": "session-123"
+}
+```
+
+## 🧠 AI Capabilities
+
+### **Exercise Generation**
+- **Grammar**: Present perfect, past simple, conditionals, passive voice
+- **Vocabulary**: Topic-based word lists with definitions and examples
+- **Listening**: Audio exercises with comprehension questions
+- **Speaking**: Conversation practice and pronunciation guidance
+- **Reading**: Comprehension passages with questions
+- **Writing**: Essay prompts and writing exercises
+
+### **Level Assessment**
+- **A1 (Beginner)**: Basic communication, simple sentences
+- **A2 (Elementary)**: Everyday situations, basic grammar
+- **B1 (Intermediate)**: Work and study contexts, complex grammar
+- **B2 (Upper Intermediate)**: Abstract topics, fluent communication
+- **C1 (Advanced)**: Professional contexts, nuanced language
+- **C2 (Proficiency)**: Native-like fluency, complex texts
+
+### **Personalized Learning**
+- **Adaptive Difficulty**: Adjusts based on performance
+- **Learning Paths**: Customized progression routes
+- **Progress Tracking**: Monitors improvement over time
+- **Weakness Detection**: Identifies areas needing attention
+
+## 🔧 Configuration
+
+### **Learning Configuration**
+```typescript
+englishLearning: {
+  exerciseCacheTtl: 3600,           // 1 hour cache
+  difficultyThreshold: 0.7,         // Difficulty matching threshold
+  maxExercisesPerRequest: 20        // Max exercises per request
+}
+```
+
+### **AI Configuration**
+```typescript
+openai: {
+  model: 'gpt-4o',
+  maxTokens: 4000,
+  temperature: 0.7,
+  timeout: 30000
+}
+```
+
+## 🚀 Deployment
+
+### **Docker**
+```bash
+# Build image
+docker build -t english-learning-ai-assistant .
+
+# Run container
+docker run -p 3000:3000 english-learning-ai-assistant
+```
+
+### **Docker Compose**
+```bash
+# Development
+docker-compose -f docker-compose.dev.yml up
+
+# Production
+docker-compose -f docker-compose.prod.yml up
 ```
 
 ## 🧪 Testing
@@ -119,140 +244,27 @@ npm run test:e2e
 
 # Test coverage
 npm run test:cov
-
-# Test specific endpoint
-curl -X POST http://localhost:3000/api/v1/super-agent/query \
-  -H "Content-Type: application/json" \
-  -d '{"query": "Tìm nhà ở Đà Nẵng", "sessionId": "test-session-123"}'
 ```
 
-## 🏗️ Development
+## 📊 Monitoring
 
-### Project Structure
-```
-nestjs-src/
-├── modules/
-│   ├── core/                 # Core services (Cache, MCP, OpenAI)
-│   ├── super-agent/          # Main chatbot logic
-│   └── health/               # Health check endpoints
-├── dto/                      # Data Transfer Objects
-├── main.ts                   # Application entry point
-└── app.module.ts            # Root module
-```
+### **Health Checks**
+- **Liveness**: `/super-agent/health`
+- **Readiness**: `/super-agent/status`
+- **Metrics**: Built-in performance monitoring
 
-### Key Components
-
-#### **Core Services**
-- `CacheService`: Session and data caching
-- `McpService`: MCP server communication
-- `OpenAiService`: GPT integration
-
-#### **SuperAgent Service**
-- Query processing and AI orchestration
-- Tool execution and response generation
-- Session management and cleanup
-
-#### **Controllers**
-- Type-safe request/response handling
-- Automatic validation and documentation
-- Error handling and logging
-
-### Development Commands
-
-```bash
-# Development with hot reload
-npm run start:dev
-
-# Build for production
-npm run build
-
-# Production mode
-npm run start:prod
-
-# Linting
-npm run lint
-
-# Format code
-npm run format
-```
-
-## 🔧 Configuration
-
-### TypeScript Configuration
-- Strict type checking enabled
-- Path mapping for clean imports
-- Decorator support for NestJS
-
-### Validation
-- Request validation with `class-validator`
-- Automatic error responses
-- Type-safe DTOs
-
-### Logging
-- Structured logging with Winston
-- Multiple log levels and transports
-- Request/response logging
-
-## 📈 Performance
-
-### Optimizations
-- **Intelligent Caching**: Session-based caching with automatic cleanup
-- **Connection Pooling**: Efficient database connections
-- **Rate Limiting**: Protection against abuse
-- **Compression**: Response compression for better performance
-
-### Monitoring
-- Health check endpoints
-- Performance metrics
-- Error tracking and logging
-
-## 🛡️ Security
-
-### Built-in Protection
-- **Helmet**: Security headers
-- **Rate Limiting**: Request throttling
-- **Input Validation**: Automatic request validation
-- **CORS**: Configurable cross-origin requests
-
-### Best Practices
-- Environment-based configuration
-- Secure error handling
-- Input sanitization
-
-## 🚀 Deployment
-
-### Production Build
-```bash
-npm run build
-npm run start:prod
-```
-
-### Docker Support
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY dist ./dist
-EXPOSE 3000
-CMD ["npm", "run", "start:prod"]
-```
-
-### Environment Variables
-```env
-NODE_ENV=production
-PORT=3000
-OPENAI_API_KEY=your_production_key
-LOG_LEVEL=warn
-```
+### **Logging**
+- **Structured Logs**: JSON format with correlation IDs
+- **Log Levels**: DEBUG, INFO, WARN, ERROR
+- **Request Tracking**: Full request/response logging
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
 
 ## 📄 License
 
@@ -260,10 +272,28 @@ This project is licensed under the MIT License.
 
 ## 🆘 Support
 
-- 📖 [NestJS Documentation](https://docs.nestjs.com/)
-- 🐛 [Issue Tracker](https://github.com/your-repo/issues)
-- 💬 [Discussions](https://github.com/your-repo/discussions)
+For support and questions:
+- **Documentation**: Check the `/docs` folder
+- **Issues**: Create a GitHub issue
+- **Email**: support@english-learning-ai.net
+
+## 🎯 Roadmap
+
+### **Phase 1** ✅
+- [x] Basic exercise generation
+- [x] Level assessment
+- [x] Grammar and vocabulary support
+
+### **Phase 2** 🚧
+- [ ] Advanced listening exercises
+- [ ] Speaking practice with AI
+- [ ] Writing feedback system
+
+### **Phase 3** 📋
+- [ ] Mobile app integration
+- [ ] Gamification features
+- [ ] Social learning features
 
 ---
 
-**Built with ❤️ using NestJS + TypeScript**
+**Built with ❤️ using NestJS, TypeScript, and OpenAI**

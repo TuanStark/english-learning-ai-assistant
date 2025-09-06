@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export interface KnowledgeBase {
-  realEstateKnowledge: string;
+  englishLearningKnowledge: string;
   websiteContext: string;
   enhancedPrompt: string;
   conversationExamples: string;
@@ -18,14 +18,14 @@ export class KnowledgeBaseLoader {
 
   constructor() {
     this.knowledgeBase = {
-      realEstateKnowledge: '',
+      englishLearningKnowledge: '',
       websiteContext: '',
       enhancedPrompt: '',
       conversationExamples: '',
       isLoaded: false
     };
     
-    this.basePath = path.join(__dirname, '../knowledge/real_estate_domain');
+    this.basePath = path.join(__dirname, '../knowledge/english_learning_domain');
   }
 
   /**
@@ -33,11 +33,11 @@ export class KnowledgeBaseLoader {
    */
   async loadKnowledgeBase(): Promise<void> {
     try {
-      this.logger.log('Loading real estate knowledge base...');
+      this.logger.log('Loading English learning knowledge base...');
 
-      // Load real estate domain knowledge
-      this.knowledgeBase.realEstateKnowledge = await this.loadFile(
-        path.join(this.basePath, 'documents', 'real_estate_knowledge.md')
+      // Load English learning domain knowledge
+      this.knowledgeBase.englishLearningKnowledge = await this.loadFile(
+        path.join(this.basePath, 'documents', 'english_learning_knowledge.md')
       );
 
       // Load website context
@@ -58,7 +58,7 @@ export class KnowledgeBaseLoader {
       this.knowledgeBase.isLoaded = true;
       
       this.logger.log('Knowledge base loaded successfully', {
-        realEstateKnowledge: this.knowledgeBase.realEstateKnowledge.length,
+        englishLearningKnowledge: this.knowledgeBase.englishLearningKnowledge.length,
         websiteContext: this.knowledgeBase.websiteContext.length,
         enhancedPrompt: this.knowledgeBase.enhancedPrompt.length,
         conversationExamples: this.knowledgeBase.conversationExamples.length
@@ -105,7 +105,7 @@ export class KnowledgeBaseLoader {
 ${this.knowledgeBase.enhancedPrompt}
 
 📚 KIẾN THỨC CHUYÊN MÔN:
-${this.knowledgeBase.realEstateKnowledge}
+${this.knowledgeBase.englishLearningKnowledge}
 
 🌐 BỐI CẢNH WEBSITE:
 ${this.knowledgeBase.websiteContext}
@@ -119,14 +119,14 @@ ${this.knowledgeBase.conversationExamples}`;
   /**
    * Get specific knowledge section
    */
-  getKnowledgeSection(section: 'realEstate' | 'website' | 'prompt' | 'examples'): string {
+  getKnowledgeSection(section: 'englishLearning' | 'website' | 'prompt' | 'examples'): string {
     if (!this.knowledgeBase.isLoaded) {
       return '';
     }
 
     switch (section) {
-      case 'realEstate':
-        return this.knowledgeBase.realEstateKnowledge;
+      case 'englishLearning':
+        return this.knowledgeBase.englishLearningKnowledge;
       case 'website':
         return this.knowledgeBase.websiteContext;
       case 'prompt':
@@ -371,7 +371,7 @@ ${this.knowledgeBase.conversationExamples}`;
   getStats(): any {
     return {
       isLoaded: this.knowledgeBase.isLoaded,
-      realEstateKnowledge: this.knowledgeBase.realEstateKnowledge.length,
+      englishLearningKnowledge: this.knowledgeBase.englishLearningKnowledge.length,
       websiteContext: this.knowledgeBase.websiteContext.length,
       enhancedPrompt: this.knowledgeBase.enhancedPrompt.length,
       conversationExamples: this.knowledgeBase.conversationExamples.length,

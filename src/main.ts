@@ -72,10 +72,10 @@ async function bootstrap() {
 
   // Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('Real Estate Chatbot Agent API')
-    .setDescription('AI-powered real estate chatbot with intelligent property search and recommendations')
+    .setTitle('English Learning AI Assistant API')
+    .setDescription('AI-powered English learning assistant with intelligent exercise generation and personalized learning paths')
     .setVersion('2.0.0')
-    .addTag('super-agent', 'Main chatbot endpoints')
+    .addTag('super-agent', 'Main English learning chatbot endpoints')
     .addTag('health', 'Health check endpoints')
     .build();
 
@@ -85,7 +85,7 @@ async function bootstrap() {
   const port = configService.get('PORT', 3000);
   await app.listen(port);
 
-  logger.info(`🚀 Real Estate Chatbot Agent (NestJS) is running on: http://localhost:${port}`);
+  logger.info(`🚀 English Learning AI Assistant (NestJS) is running on: http://localhost:${port}`);
   logger.info(`📚 API Documentation available at: http://localhost:${port}/api/docs`);
 }
 

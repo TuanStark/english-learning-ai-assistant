@@ -3,8 +3,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class QueryRequestDto {
   @ApiProperty({
-    description: 'User query for real estate search',
-    example: 'Tìm căn hộ 2 phòng ngủ tại Hải Châu giá dưới 5 tỷ',
+    description: 'User query for English learning assistance',
+    example: 'Tôi muốn học ngữ pháp thì hiện tại hoàn thành, trình độ B1',
     minLength: 1,
     maxLength: 1000,
   })
@@ -24,7 +24,7 @@ export class QueryRequestDto {
 
   @ApiPropertyOptional({
     description: 'Additional context for the query',
-    example: { previousQuery: 'Tìm nhà ở Đà Nẵng' },
+    example: { previousQuery: 'Học từ vựng chủ đề gia đình', level: 'A2' },
   })
   @IsOptional()
   context?: any;
@@ -39,7 +39,7 @@ export class QueryResponseDto {
 
   @ApiProperty({
     description: 'AI-generated response to the user query',
-    example: 'Tôi đã tìm được 5 căn hộ phù hợp với yêu cầu của bạn...',
+    example: 'Tôi đã tìm được bài tập ngữ pháp phù hợp với trình độ B1 của bạn...',
   })
   response: string;
 
@@ -50,7 +50,7 @@ export class QueryResponseDto {
   sessionId: string;
 
   @ApiPropertyOptional({
-    description: 'Search results from the database',
+    description: 'Learning materials and exercises from the database',
     type: 'array',
     items: {
       type: 'object',
@@ -61,8 +61,8 @@ export class QueryResponseDto {
   @ApiPropertyOptional({
     description: 'Query analysis information',
     example: {
-      query: 'Tìm căn hộ...',
-      intent: 'search',
+      query: 'Học ngữ pháp thì hiện tại hoàn thành...',
+      intent: 'learning',
       confidence: 1,
     },
   })
@@ -78,7 +78,7 @@ export class QueryResponseDto {
       duration: 5000,
       aiService: 'OpenAI',
       model: 'gpt-4o',
-      toolsUsed: ['search_properties'],
+      toolsUsed: ['get_exercises'],
     },
   })
   metadata?: {
@@ -126,7 +126,7 @@ export class ErrorResponseDto {
 export class ComplexityAnalysisRequestDto {
   @ApiProperty({
     description: 'Query text to analyze for complexity',
-    example: 'Tìm căn hộ 2 phòng ngủ tại Hải Châu với giá dưới 3 tỷ'
+    example: 'Tôi muốn học ngữ pháp thì hiện tại hoàn thành và quá khứ đơn, trình độ B2'
   })
   @IsString()
   @IsNotEmpty()

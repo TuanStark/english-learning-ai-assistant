@@ -1,6 +1,6 @@
 import { Module, Global } from '@nestjs/common';
 import { CacheService } from './services/cache.service';
-import { McpService } from './services/mcp.service';
+import { McpHttpService } from './services/mcp-http.service';
 import { OpenAiService } from './services/openai.service';
 import { SystemPromptUtil } from '../../common/utils/system-prompt.util';
 import { KnowledgeBaseLoader } from '../../knowledge/knowledge-base-loader';
@@ -10,7 +10,7 @@ import { QueryComplexityAnalyzer } from '../../knowledge/query-complexity-analyz
 @Module({
   providers: [
     CacheService,
-    McpService,
+    McpHttpService,
     OpenAiService,
     SystemPromptUtil,
     KnowledgeBaseLoader,
@@ -18,7 +18,7 @@ import { QueryComplexityAnalyzer } from '../../knowledge/query-complexity-analyz
   ],
   exports: [
     CacheService,
-    McpService,
+    McpHttpService,
     OpenAiService,
     SystemPromptUtil,
     KnowledgeBaseLoader,

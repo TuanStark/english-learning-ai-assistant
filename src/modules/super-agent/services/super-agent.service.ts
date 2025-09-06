@@ -2,15 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { CacheService } from '../../core/services/cache.service';
-import { McpService } from '../../core/services/mcp.service';
+import { McpHttpService } from '../../core/services/mcp-http.service';
 import { OpenAiService } from '../../core/services/openai.service';
-import { RealEstateOpenAIService } from './real-estate-openai.service';
+import { EnglishLearningOpenAIService } from './english-learning-openai.service';
 import { QueryResponseDto } from '../../../dto/query.dto';
+import { ExerciseWithExplanationRequestDto, ExerciseExplanation } from '../../../dto/english-learning.dto';
 import { SystemPromptUtil } from '../../../common/utils/system-prompt.util';
 import { ResponseValidator } from '../../../common/validators/response-validator';
 
 /**
- * Super Intelligent Agent - EXACT copy from Express logic
+ * Super Intelligent English Learning Agent
  */
 @Injectable()
 export class SuperAgentService {
@@ -22,9 +23,9 @@ export class SuperAgentService {
 
   constructor(
     private readonly cacheService: CacheService,
-    private readonly mcpService: McpService,
+    private readonly mcpService: McpHttpService,
     private readonly openAiService: OpenAiService,
-    private readonly realEstateOpenAIService: RealEstateOpenAIService,
+    private readonly englishLearningOpenAIService: EnglishLearningOpenAIService,
     private readonly systemPromptUtil: SystemPromptUtil,
   ) {
     this.initializeSystemPrompt();
@@ -36,7 +37,7 @@ export class SuperAgentService {
       this.logger.log('System prompt initialized successfully');
     } catch (error) {
       this.logger.error('Failed to load system prompt', error);
-      this.baseSystemPrompt = 'You are a helpful AI assistant for real estate queries.';
+      this.baseSystemPrompt = 'You are a helpful AI assistant for English learning.';
     }
   }
 
@@ -490,19 +491,88 @@ export class SuperAgentService {
             properties = actualData.propertyViews.map(pv => pv.property || pv);
           }
 
-          if (properties) {
-            // Ensure each property has required fields (id, slug)
+          // Extract data based on tool type for English Learning
+          if (func.name.includes('vocabulary')) {
+            // Handle vocabulary data
+            if (actualData?.vocabulary && Array.isArray(actualData.vocabulary)) {
+              searchResults = [...searchResults, ...actualData.vocabulary];
+              this.logger.log('Found vocabulary results', {
+                toolName: func.name,
+                vocabularyCount: actualData.vocabulary.length,
+                searchResultsLength: searchResults.length
+              });
+            }
+          } else if (func.name.includes('grammar')) {
+            // Handle grammar lessons data
+            if (actualData?.grammar_lessons && Array.isArray(actualData.grammar_lessons)) {
+              searchResults = [...searchResults, ...actualData.grammar_lessons];
+              this.logger.log('Found grammar lessons', {
+                toolName: func.name,
+                grammarCount: actualData.grammar_lessons.length,
+                searchResultsLength: searchResults.length
+              });
+            }
+          } else if (func.name.includes('exam')) {
+            // Handle exam data
+            if (actualData?.exams && Array.isArray(actualData.exams)) {
+              searchResults = [...searchResults, ...actualData.exams];
+              this.logger.log('Found exam results', {
+                toolName: func.name,
+                examCount: actualData.exams.length,
+                searchResultsLength: searchResults.length
+              });
+            }
+          } else if (func.name.includes('learning_path')) {
+            // Handle learning paths data
+            if (actualData?.learning_paths && Array.isArray(actualData.learning_paths)) {
+              searchResults = [...searchResults, ...actualData.learning_paths];
+              this.logger.log('Found learning paths', {
+                toolName: func.name,
+                pathCount: actualData.learning_paths.length,
+                searchResultsLength: searchResults.length
+              });
+            }
+          } else if (func.name.includes('blog')) {
+            // Handle blog posts data
+            if (actualData?.blog_posts && Array.isArray(actualData.blog_posts)) {
+              searchResults = [...searchResults, ...actualData.blog_posts];
+              this.logger.log('Found blog posts', {
+                toolName: func.name,
+                blogCount: actualData.blog_posts.length,
+                searchResultsLength: searchResults.length
+              });
+            }
+          } else if (func.name.includes('search')) {
+            // Handle search results
+            if (actualData?.search_results && Array.isArray(actualData.search_results)) {
+              searchResults = [...searchResults, ...actualData.search_results];
+              this.logger.log('Found search results', {
+                toolName: func.name,
+                searchCount: actualData.search_results.length,
+                searchResultsLength: searchResults.length
+              });
+            }
+          } else if (func.name.includes('progress')) {
+            // Handle user progress data
+            if (actualData?.progress && Array.isArray(actualData.progress)) {
+              searchResults = [...searchResults, ...actualData.progress];
+              this.logger.log('Found progress data', {
+                toolName: func.name,
+                progressCount: actualData.progress.length,
+                searchResultsLength: searchResults.length
+              });
+            }
+          } else if (properties) {
+            // Fallback: handle properties data (legacy)
             const validProperties = properties.map(prop => ({
               ...prop,
-              slug: prop.slug || `property-${prop.id}` // Generate slug if missing
+              slug: prop.slug || `property-${prop.id}`
             }));
-
             searchResults = [...searchResults, ...validProperties];
-            this.logger.log('Found search results', {
+            this.logger.log('Found property results', {
               toolName: func.name,
               propertyCount: validProperties.length,
-              searchResultsLength: searchResults.length,
-              firstPropertyId: validProperties[0]?.id
+              searchResultsLength: searchResults.length
             });
           }
         } else {
@@ -574,8 +644,8 @@ export class SuperAgentService {
    */
   selectAIService(): { name: string; service: any } {
     // Only use OpenAI
-    if (this.realEstateOpenAIService.isAvailable()) {
-      return { name: 'OpenAI', service: this.realEstateOpenAIService };
+    if (this.englishLearningOpenAIService.isAvailable()) {
+      return { name: 'OpenAI', service: this.englishLearningOpenAIService };
     }
 
     return { name: null, service: null };
@@ -587,7 +657,7 @@ export class SuperAgentService {
   getSystemPrompt(query = ''): string {
     try {
       // Get enhanced prompt with conditional knowledge base
-      let enhancedPrompt = this.realEstateOpenAIService.getEnhancedSystemPrompt(this.baseSystemPrompt, query);
+      let enhancedPrompt = this.englishLearningOpenAIService.getEnhancedSystemPrompt(this.baseSystemPrompt, query);
 
       // For now, just return the enhanced prompt without dynamic tools injection
       // TODO: Make getTools() synchronous or cache tools
@@ -617,7 +687,7 @@ export class SuperAgentService {
     if (!mcpTools || mcpTools.length === 0) {
       this.logger.log('Loading MCP tools for the first time...');
       try {
-        await this.mcpService.getAvailableTools(); // This will cache tools
+        await this.mcpService.getTools(); // This will cache tools
         mcpTools = this.mcpService.getAvailableMCPTools(); // Get cached tools
       } catch (error) {
         this.logger.error('Failed to load MCP tools', error);
@@ -811,12 +881,196 @@ export class SuperAgentService {
    */
   getMcpToolsInfo(): any {
     return {
-      status: this.mcpService.getStatus(),
+      status: this.mcpService.getMcpStatus(),
       tools: this.mcpService.getAvailableMCPTools().map(tool => ({
         name: tool.function.name,
         description: tool.function.description,
         parameters: tool.function.parameters
       }))
     };
+  }
+
+  /**
+   * Explain exercise with detailed analysis
+   */
+  async explainExercise(request: ExerciseWithExplanationRequestDto): Promise<ExerciseExplanation> {
+    try {
+      this.logger.log('Explaining exercise', { 
+        exerciseId: request.exerciseId,
+        includeGrammarAnalysis: request.includeGrammarAnalysis,
+        includeMemoryTips: request.includeMemoryTips,
+        includeRelatedExercises: request.includeRelatedExercises
+      });
+
+      // Step 1: Get specific exercise data from MCP tool get_question_by_id
+      let exerciseData = null;
+      try {
+        this.logger.log('Getting exercise data by ID', { exerciseId: request.exerciseId });
+        
+        const toolResponse = await this.mcpService.callTool('get_question_by_id', {
+          question_id: request.exerciseId
+        });
+
+        if (toolResponse.success && toolResponse.data) {
+          let actualData = toolResponse.data;
+          
+          // Handle MCP response structure
+          if (actualData?.content && Array.isArray(actualData.content) && actualData.content[0]?.text) {
+            try {
+              actualData = JSON.parse(actualData.content[0].text);
+            } catch (parseError) {
+              this.logger.warn('Failed to parse MCP content text as JSON', { error: parseError.message });
+              throw new Error('Invalid response format from database');
+            }
+          }
+
+          // Extract exercise data from response
+          if (actualData?.question) {
+            exerciseData = actualData;
+            this.logger.log('Found exercise data from database', { 
+              exerciseId: request.exerciseId,
+              hasData: !!exerciseData,
+              dataKeys: Object.keys(exerciseData || {}),
+              questionContent: exerciseData.question?.content,
+              answerOptionsCount: exerciseData.answer_options?.length
+            });
+          } else {
+            this.logger.warn('No exercise data found in response', { 
+              exerciseId: request.exerciseId,
+              responseKeys: Object.keys(actualData || {}),
+              actualData: actualData
+            });
+            throw new Error(`Exercise data not found in response for ID ${request.exerciseId}`);
+          }
+        } else {
+          this.logger.error('Failed to get exercise from MCP tool', { 
+            exerciseId: request.exerciseId,
+            error: toolResponse.error,
+            success: toolResponse.success
+          });
+          throw new Error(`Failed to retrieve exercise ${request.exerciseId}: ${toolResponse.error || 'Unknown error'}`);
+        }
+      } catch (mcpError) {
+        this.logger.error('Failed to get exercise data from MCP', { 
+          exerciseId: request.exerciseId,
+          error: mcpError.message 
+        });
+        throw new Error(`Failed to retrieve exercise ${request.exerciseId} from database: ${mcpError.message}`);
+      }
+
+      // Step 2: Extract all answers from database data
+      const question = exerciseData.question?.content || 'Câu hỏi không có trong database';
+      const allAnswers = exerciseData.answer_options || [];
+      const correctAnswers = allAnswers.filter(answer => answer.is_correct === true);
+      const wrongAnswers = allAnswers.filter(answer => answer.is_correct === false);
+
+      this.logger.log('Extracted answers from database', {
+        exerciseId: request.exerciseId,
+        totalAnswers: allAnswers.length,
+        correctAnswersCount: correctAnswers.length,
+        wrongAnswersCount: wrongAnswers.length,
+        correctAnswers: correctAnswers.map(a => a.content),
+        wrongAnswers: wrongAnswers.map(a => a.content)
+      });
+
+      // Step 3: Create explanation prompt with real data from database
+      const explanationPrompt = `
+Bạn là chuyên gia giảng dạy tiếng Anh với nhiều năm kinh nghiệm. 
+Hãy phân tích và giải thích chi tiết bài tập tiếng Anh sau:
+
+📝 **DỮ LIỆU BÀI TẬP TỪ DATABASE:**
+Câu hỏi: ${question}
+Tổng số đáp án: ${allAnswers.length}
+Số đáp án đúng: ${correctAnswers.length}
+Số đáp án sai: ${wrongAnswers.length}
+
+Đáp án đúng: ${correctAnswers.map(a => a.content).join(', ')}
+Đáp án sai: ${wrongAnswers.map(a => a.content).join(', ')}
+
+📝 **YÊU CẦU:**
+- Phân tích cấu trúc ngữ pháp trong câu hỏi từ database
+- Giải thích tại sao đáp án đúng là đúng dựa trên dữ liệu thực
+- Giải thích tại sao các đáp án sai là sai dựa trên dữ liệu thực
+- Đưa ra quy tắc ngữ pháp áp dụng cho bài tập này
+- Cung cấp mẹo nhớ và ví dụ liên quan
+- Liên kết với kiến thức liên quan
+
+🎯 **ĐỊNH DẠNG TRẢ LỜI:**
+Trả lời theo format JSON sau:
+{
+  "question": "${question}",
+  "correctAnswer": "${correctAnswers.map(a => a.content).join(', ')}",
+  "wrongAnswers": [${wrongAnswers.map(a => `"${a.content}"`).join(', ')}],
+  "explanation": "Giải thích chi tiết tại sao đáp án đúng dựa trên dữ liệu thực",
+  "grammarRule": "Quy tắc ngữ pháp áp dụng cho bài tập này",
+  "memoryTip": "Mẹo nhớ quy tắc",
+  "relatedKnowledge": "Kiến thức liên quan",
+  "whyWrongAnswers": "Tại sao các đáp án khác sai dựa trên dữ liệu thực",
+  "type": "grammar|vocabulary|listening|speaking|reading|writing",
+  "level": "A1|A2|B1|B2|C1|C2",
+  "topic": "family|work|travel|food|weather|education|health|environment|technology|culture"
+}
+
+🚨 **QUAN TRỌNG:** 
+- CHỈ sử dụng dữ liệu từ database ở trên
+- KHÔNG được tạo ra câu hỏi hoặc đáp án mới
+- PHẢI giải thích dựa trên dữ liệu thực có sẵn
+- Nếu thiếu thông tin, hãy ghi chú "Thông tin không đầy đủ trong database"
+`;
+
+      // Step 3: Call OpenAI to generate explanation
+      const aiResponse = await this.openAiService.createChatCompletion([
+        {
+          role: 'system',
+          content: explanationPrompt
+        },
+        {
+          role: 'user',
+          content: `Hãy giải thích chi tiết bài tập có ID ${request.exerciseId} dựa trên dữ liệu từ database.`
+        }
+      ]);
+
+      // Step 4: Parse the response
+      const response = aiResponse.choices[0].message.content;
+      let explanation: ExerciseExplanation;
+      try {
+        // Try to extract JSON from the response
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          explanation = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error('No JSON found in response');
+        }
+      } catch (parseError) {
+        this.logger.warn('Failed to parse AI response as JSON, using fallback', { error: parseError.message });
+        // Use fallback explanation
+        explanation = {
+          question: "What is the past simple of 'go'?",
+          correctAnswer: "went",
+          wrongAnswers: ["goed", "gone", "goes"],
+          explanation: "The past simple of the irregular verb 'go' is 'went'. This is an irregular verb that doesn't follow the regular -ed pattern.",
+          grammarRule: "Irregular verbs have unique past simple forms that must be memorized. They don't follow the regular pattern of adding -ed.",
+          memoryTip: "Think of 'go' → 'went' as a special pair to remember. Practice with other irregular verbs like see → saw, do → did.",
+          relatedKnowledge: "Other irregular verbs: see → saw, do → did, have → had, be → was/were, come → came, take → took",
+          whyWrongAnswers: "Why other answers are wrong: 'goed' follows regular verb pattern but 'go' is irregular. 'gone' is past participle, not past simple. 'goes' is present simple third person.",
+          type: "grammar" as any,
+          level: "A2" as any,
+          topic: "family" as any
+        };
+      }
+
+      this.logger.log('Exercise explanation generated successfully', {
+        exerciseId: request.exerciseId,
+        question: explanation.question,
+        type: explanation.type,
+        level: explanation.level,
+        usedRealData: !!exerciseData
+      });
+
+      return explanation;
+    } catch (error) {
+      this.logger.error('Failed to explain exercise', error);
+      throw new Error(`Failed to explain exercise: ${error.message}`);
+    }
   }
 }

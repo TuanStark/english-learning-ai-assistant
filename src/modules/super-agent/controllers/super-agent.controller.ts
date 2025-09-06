@@ -19,12 +19,13 @@ import {
 import { Request } from 'express';
 
 import { SuperAgentService } from '../services/super-agent.service';
-import { RealEstateOpenAIService } from '../services/real-estate-openai.service';
+import { EnglishLearningOpenAIService } from '../services/english-learning-openai.service';
 import {
   QueryRequestDto,
   QueryResponseDto,
   ErrorResponseDto,
 } from '../../../dto/query.dto';
+import { ExerciseWithExplanationRequestDto, ExerciseExplanation } from '../../../dto/english-learning.dto';
 
 @ApiTags('super-agent')
 @Controller('super-agent')
@@ -34,13 +35,13 @@ export class SuperAgentController {
 
   constructor(
     private readonly superAgentService: SuperAgentService,
-    private readonly realEstateOpenAIService: RealEstateOpenAIService,
+    private readonly englishLearningOpenAIService: EnglishLearningOpenAIService,
   ) {}
 
   @Post('query')
   @ApiOperation({
     summary: 'Process user query',
-    description: 'Process natural language query and return AI-generated response with property search results',
+    description: 'Process natural language query and return AI-generated response with English learning materials',
   })
   @ApiBody({ type: QueryRequestDto })
   @ApiResponse({
@@ -104,7 +105,7 @@ export class SuperAgentController {
       return {
         success: true,
         agent: {
-          name: 'Super Intelligent Real Estate Agent',
+          name: 'Super Intelligent English Learning Agent',
           version: '2.0.0',
           intelligenceLevel: 'SUPER_ADVANCED',
           status: 'online'
@@ -115,7 +116,7 @@ export class SuperAgentController {
             model: 'gpt-4o'
           },
           mcp: this.superAgentService.getMcpToolsInfo(),
-          knowledgeBase: this.realEstateOpenAIService.getKnowledgeStatus()
+          knowledgeBase: this.englishLearningOpenAIService.getKnowledgeStatus()
         },
         system: {
           uptime: process.uptime(),
@@ -145,7 +146,7 @@ export class SuperAgentController {
       success: true,
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      agent: 'Super Intelligent Real Estate Agent',
+      agent: 'Super Intelligent English Learning Agent',
       version: '2.0.0'
     };
   }
@@ -171,6 +172,49 @@ export class SuperAgentController {
         {
           success: false,
           error: 'Failed to retrieve MCP tools',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('explain-exercise')
+  @ApiOperation({
+    summary: 'Explain exercise with detailed analysis',
+    description: 'Get detailed explanation for an English exercise including grammar rules, why answers are correct/wrong, and learning tips',
+  })
+  @ApiBody({ type: ExerciseWithExplanationRequestDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Exercise explanation retrieved successfully',
+    type: ExerciseExplanation,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - invalid exercise ID or parameters',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    type: ErrorResponseDto,
+  })
+  async explainExercise(
+    @Body() request: ExerciseWithExplanationRequestDto,
+  ): Promise<ExerciseExplanation> {
+    try {
+      this.logger.log('Exercise explanation requested', { exerciseId: request.exerciseId });
+      
+      const explanation = await this.superAgentService.explainExercise(request);
+      
+      return explanation;
+    } catch (error) {
+      this.logger.error('Failed to explain exercise', error);
+      throw new HttpException(
+        {
+          success: false,
+          error: 'Failed to explain exercise',
+          details: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

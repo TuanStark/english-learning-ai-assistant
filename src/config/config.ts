@@ -34,17 +34,11 @@ export interface AppConfig {
     defaultPageSize: number;
   };
   
-  // Real Estate Configuration
-  realEstate: {
-    propertyCacheTtl: number;
-    searchSimilarityThreshold: number;
-    maxSearchRadiusKm: number;
-  };
-  
-  // NLP Configuration
-  nlp: {
-    confidenceThreshold: number;
-    intentClassificationModel: string;
+  // English Learning Configuration
+  englishLearning: {
+    exerciseCacheTtl: number;
+    difficultyThreshold: number;
+    maxExercisesPerRequest: number;
   };
 
   // OpenAI Configuration
@@ -80,30 +74,24 @@ const config: AppConfig = {
   
   // MCP Configuration
   mcp: {
-    serverUrl: process.env.MCP_SERVER_URL || 'http://localhost:8080',
-    apiKey: process.env.MCP_API_KEY || 'f01c5ef6-2237-492f-a1c8-b6a922b13cdb',
+    serverUrl: process.env.MCP_SERVER_URL || 'http://localhost:3003',
+    apiKey: process.env.MCP_API_KEY || 'english-learning-api-key-123',
     timeout: parseInt(process.env.MCP_TIMEOUT || '30000')
   },
   
   // AI Agent Configuration
   agent: {
-    name: process.env.AGENT_NAME || 'RealEstateBot',
+    name: process.env.AGENT_NAME || 'EnglishLearningBot',
     version: process.env.AGENT_VERSION || '2.0.0',
     maxQueryResults: parseInt(process.env.MAX_QUERY_RESULTS || '50'),
     defaultPageSize: parseInt(process.env.DEFAULT_PAGE_SIZE || '20')
   },
   
-  // Real Estate Configuration
-  realEstate: {
-    propertyCacheTtl: parseInt(process.env.PROPERTY_CACHE_TTL || '3600'), // 1 hour
-    searchSimilarityThreshold: parseFloat(process.env.SEARCH_SIMILARITY_THRESHOLD || '0.7'),
-    maxSearchRadiusKm: parseInt(process.env.MAX_SEARCH_RADIUS_KM || '50')
-  },
-  
-  // NLP Configuration
-  nlp: {
-    confidenceThreshold: parseFloat(process.env.NLP_CONFIDENCE_THRESHOLD || '0.6'),
-    intentClassificationModel: process.env.INTENT_CLASSIFICATION_MODEL || 'compromise'
+  // English Learning Configuration
+  englishLearning: {
+    exerciseCacheTtl: parseInt(process.env.EXERCISE_CACHE_TTL || '3600'), // 1 hour
+    difficultyThreshold: parseFloat(process.env.DIFFICULTY_THRESHOLD || '0.7'),
+    maxExercisesPerRequest: parseInt(process.env.MAX_EXERCISES_PER_REQUEST || '20')
   },
 
   // OpenAI Configuration
